@@ -1,6 +1,6 @@
 [
     {
-            "Chaincode": "fabcar",
+            "Chaincode": "fabvaccine",
             "EndorsersByGroups": {
                     "G0": [
                             {

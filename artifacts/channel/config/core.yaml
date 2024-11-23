@@ -232,9 +232,9 @@ peer:
     # TLS Settings
     tls:
         # Require server-side TLS
-        enabled:  false
+        enabled: true
         # Require client certificates / mutual TLS.
-        # Note that clients that are not configured to use a certificate will
+        # Note that clients that are not configured to use a certificate wfvill
         # fail to connect to the peer.
         clientAuthRequired: false
         # X.509 certificate used for TLS server

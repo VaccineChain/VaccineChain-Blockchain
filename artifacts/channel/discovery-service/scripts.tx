@@ -10,4 +10,4 @@
     discover --configFile conf.yaml config --channel mychannel  --server localhost:7051
 
 3) Endorsers query
-    discover --configFile conf.yaml endorsers --channel mychannel  --server localhost:7051 --chaincode fabcar
+    discover --configFile conf.yaml endorsers --channel mychannel  --server localhost:7051 --chaincode fabvaccine

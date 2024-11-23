@@ -204,25 +204,9 @@ queryCommitted() {
 }
 
 # queryCommitted
-
 chaincodeInvokeInit() {
     setGlobalsForPeer0Org1
-    peer chaincode invoke -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com \
-        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
-        -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        --isInit -c '{"Args":[]}'
-
-}
-
-# chaincodeInvokeInit
-
-chaincodeInvoke() {
-    setGlobalsForPeer0Org1
-
-    ## Initialize the ledger
+    ## Invoke initLedger without --isInit
     peer chaincode invoke -o localhost:7050 \
         --ordererTLSHostnameOverride orderer.example.com \
         --tls $CORE_PEER_TLS_ENABLED \
@@ -231,9 +215,16 @@ chaincodeInvoke() {
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
         -c '{"function": "initLedger","Args":[]}'
+}
 
-    ## Add private data for vaccine
-    export VACCINE=$(echo -n "{\"key\":\"VAC001\", \"deviceId\":\"DEV001\",\"vaccineId\":\"VAC001\",\"type\":\"Temperature\",\"value\":\"2.5\",\"unit\":\"°C\",\"timestamp\":\"2024-07-01T10:00:00\",\"status\":\"Normal\"}" | base64 | tr -d \\n)
+
+
+# chaincodeInvokeInit
+
+chaincodeInvoke() {
+    setGlobalsForPeer0Org1
+
+    ## Invoke addVaccineData with sample data
     peer chaincode invoke -o localhost:7050 \
         --ordererTLSHostnameOverride orderer.example.com \
         --tls $CORE_PEER_TLS_ENABLED \
@@ -241,44 +232,24 @@ chaincodeInvoke() {
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        -c '{"function": "createPrivateVaccine", "Args":[]}' \
-        --transient "{\"vaccine\":\"$VACCINE\"}"
+        -c '{"function": "addVaccineData","Args":["VAC004", "DEV004", "-5"]}'
 }
 
-
-# chaincodeInvoke
-
-chaincodeQuery() {
-    setGlobalsForPeer0Org2
-
-    # Query all cars
-    # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}'
-
-    # Query Car by Id
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryVaccine","Args":["DEV001"]}'
-    #'{"Args":["GetSampleData","Key1"]}'
-
-    # Query Private Car by Id
-    # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "readPrivateCar","Args":["1111"]}'
-    # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "readCarPrivateDetails","Args":["1111"]}'
-}
 
 # chaincodeQuery
 
 # Run this function if you add any new dependency in chaincode
 # presetup
 
-packageChaincode
-installChaincode
-queryInstalled
-approveForMyOrg1
-checkCommitReadyness
-approveForMyOrg2
-checkCommitReadyness
-commitChaincodeDefination
-queryCommitted
+# packageChaincode
+# installChaincode
+# queryInstalled
+# approveForMyOrg1
+# checkCommitReadyness
+# approveForMyOrg2
+# checkCommitReadyness
+# commitChaincodeDefination
+# queryCommitted
 chaincodeInvokeInit
-sleep 5
-chaincodeInvoke
-sleep 3
-chaincodeQuery
+# sleep 5
+# chaincodeInvoke

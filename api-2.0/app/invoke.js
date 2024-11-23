@@ -55,7 +55,13 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
 
         let result
         let message;
-        if (fcn === "createCar" || fcn === "createPrivateCarImplicitForOrg1"
+        
+        if (fcn === "createVaccine" || fcn === "createPrivateCarImplicitForOrg1"
+            || fcn == "createPrivateCarImplicitForOrg2") {
+            result = await contract.submitTransaction(fcn, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+            message = `Successfully added the vaccine asset with key ${args[0]}`
+
+        } else if (fcn === "createCar" || fcn === "createPrivateCarImplicitForOrg1"
             || fcn == "createPrivateCarImplicitForOrg2") {
             result = await contract.submitTransaction(fcn, args[0], args[1], args[2], args[3], args[4]);
             message = `Successfully added the car asset with key ${args[0]}`
