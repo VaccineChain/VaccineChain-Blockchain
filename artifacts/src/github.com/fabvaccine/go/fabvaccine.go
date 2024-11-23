@@ -53,17 +53,21 @@ func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Respo
 	}
 
 	for _, vaccine := range vaccines {
+		logger.Infof("Adding vaccine: %+v", vaccine)
 		dataAsBytes, err := json.Marshal(vaccine)
 		if err != nil {
+			logger.Errorf("Failed to marshal vaccine: %s", err)
 			return shim.Error("Failed to marshal data: " + err.Error())
 		}
 
 		err = APIstub.PutState(vaccine.VaccineID, dataAsBytes)
 		if err != nil {
+			logger.Errorf("Failed to add vaccine data: %s", err)
 			return shim.Error("Failed to add vaccine data: " + err.Error())
 		}
 	}
 
+	logger.Infof("Ledger initialized successfully")
 	return shim.Success(nil)
 }
 
@@ -113,6 +117,8 @@ func (s *SmartContract) queryVaccineDataByID(APIstub shim.ChaincodeStubInterface
 
 	return shim.Success(dataAsBytes)
 }
+
+/////////////////////////////// API //////////////////////////////
 
 func main() {
 	err := shim.Start(new(SmartContract))

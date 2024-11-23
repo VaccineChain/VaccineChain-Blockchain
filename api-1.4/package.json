@@ -1,35 +1,29 @@
 {
-  "name": "balance-transfer",
+  "name": "api-1.4",
   "version": "1.0.0",
-  "description": "Basic Network node program to demonstrate using node.js SDK APIs",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
-  "keywords": [
-    "fabric-client sample app",
-    "balance-transfer node sample",
-    "v1.0 fabric nodesdk sample"
-  ],
-  "engines": {
-    "node": ">=8.9.4 <9.0",
-    "npm": ">=5.6.0 <6.0"
-  },
-  "license": "Apache-2.0",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "dependencies": {
-    "axios": "^0.19.0",
-    "body-parser": "^1.17.1",
-    "cookie-parser": "^1.4.3",
-    "cors": "^2.8.3",
-    "express": "^4.15.2",
-    "express-bearer-token": "^2.1.0",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-bearer-token": "^3.0.0",
     "express-jwt": "^5.3.0",
-    "express-session": "^1.15.2",
-    "fabric-ca-client": "~1.4.0",
-    "fabric-client": "~1.4.0",
-    "fs-extra": "^2.0.0",
-    "jsonwebtoken": "^7.3.0",
+    "fabric-ca-client": "^2.2.20",
+    "fabric-client": "^1.4.20",
+    "fabric-network": "^2.2.20",
     "log4js": "^0.6.38",
-    "prom-client": "^11.5.3"
+    "prom-client": "^15.1.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
   }
 }

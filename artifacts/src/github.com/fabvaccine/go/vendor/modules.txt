@@ -8,8 +8,6 @@ github.com/golang/protobuf/ptypes/timestamp
 github.com/hyperledger/fabric/common/flogging
 github.com/hyperledger/fabric/common/flogging/fabenc
 # github.com/hyperledger/fabric-chaincode-go v0.0.0-20200128192331-2d899240a7ed
-github.com/hyperledger/fabric-chaincode-go/pkg/attrmgr
-github.com/hyperledger/fabric-chaincode-go/pkg/cid
 github.com/hyperledger/fabric-chaincode-go/shim
 github.com/hyperledger/fabric-chaincode-go/shim/internal
 # github.com/hyperledger/fabric-protos-go v0.0.0-20190919234611-2a87503ac7c9

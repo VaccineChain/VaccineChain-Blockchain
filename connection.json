@@ -1,0 +1,34 @@
+    {
+        "name": "fabric-network",
+        "version": "1.0.0",
+        "client": {
+            "organization": "Org1"
+        },
+        "organizations": {
+            "Org1": {
+                "mspid": "Org1MSP",
+                "peers": ["peer0.org1.example.com"],
+                "certificateAuthorities": ["ca.org1.example.com"]
+            }
+        },
+        "peers": {
+            "peer0.org1.example.com": {
+                "url": "grpc://localhost:7051"
+            }
+        },
+        "orderers": {
+            "orderer.example.com": {
+                "url": "grpc://localhost:7050"
+            }
+        },
+        "certificateAuthorities": {
+            "ca.org1.example.com": {
+                "url": "https://localhost:7054",
+                "caName": "ca-org1",
+                "tlsCACerts": {
+                    "pem": "-----BEGIN CERTIFICATE-----\nMIICUDCCAfegAwIBAgIQQ8GyC3GqOaN1RKAl2MnSfjAKBggqhkjOPQQDAjBzMQsw\nCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy\nYW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu\nb3JnMS5leGFtcGxlLmNvbTAeFw0yNDExMjMwOTE2MDBaFw0zNDExMjEwOTE2MDBa\nMHMxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T\nYW4gRnJhbmNpc2NvMRkwFwYDVQQKExBvcmcxLmV4YW1wbGUuY29tMRwwGgYDVQQD\nExNjYS5vcmcxLmV4YW1wbGUuY29tMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE\n2aN9LO2ZVokGREo7SZGBVTNU5zPOmHUuWwMQk7HM3/JXA6E2ElG3WGa8oItMGrns\nHjEEL3GJzqM1ua/gn0p1k6NtMGswDgYDVR0PAQH/BAQDAgGmMB0GA1UdJQQWMBQG\nCCsGAQUFBwMCBggrBgEFBQcDATAPBgNVHRMBAf8EBTADAQH/MCkGA1UdDgQiBCBz\nTPKzLL5Bn0TgLzObVf58ni8lWoeHOyGzp1vBfz2wMDAKBggqhkjOPQQDAgNHADBE\nAiAxEh3zPER+9Tb4fv6vzzaqyL0F+ncjOg47ppyqUJp7qwIge+LDysDlB3C1SoBh\naVxpdTCtE5GlAEv6eeVTrlX48NI=\n-----END CERTIFICATE-----"
+                }
+            }
+        }
+
+    }
