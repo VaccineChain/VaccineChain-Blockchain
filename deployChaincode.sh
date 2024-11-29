@@ -283,7 +283,7 @@ chaincodeQuery() {
 # chaincodeQuery
 
 # Run this function if you add any new dependency in chaincode
-presetup
+# presetup
 
 # packageChaincode
 # installChaincode

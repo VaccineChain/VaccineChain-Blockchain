@@ -135,6 +135,7 @@ app.post('/users', async function (req, res) {
 	}
 
 });
+
 // Create Channel
 app.post('/channels', async function (req, res) {
 	logger.info('<<<<<<<<<<<<<<<<< C R E A T E  C H A N N E L >>>>>>>>>>>>>>>>>');

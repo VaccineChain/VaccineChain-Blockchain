@@ -207,7 +207,7 @@ queryCommitted() {
 chaincodeInvokeInit() {
     setGlobalsForPeer0Org1
 
-    ## Invoke initLedger with --isInit
+    # Run lan thu nhat:
     # peer chaincode invoke -o localhost:7050 \
     #     --ordererTLSHostnameOverride orderer.example.com \
     #     --tls $CORE_PEER_TLS_ENABLED \
@@ -243,7 +243,7 @@ chaincodeInvoke() {
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        -c '{"function": "addVaccineData","Args":["VAC004", "DEV004", "-5"]}'
+        -c '{"function": "addVaccineData","Args":["VAC002", "DEV002", "-5"]}'
 }
 
 
@@ -261,6 +261,6 @@ chaincodeInvoke() {
 # checkCommitReadyness
 # commitChaincodeDefination
 # queryCommitted
-# chaincodeInvokeInit
+chaincodeInvokeInit
 # sleep 5
-chaincodeInvoke
+# chaincodeInvoke

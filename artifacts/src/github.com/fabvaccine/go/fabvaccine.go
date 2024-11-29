@@ -14,9 +14,10 @@ type SmartContract struct{}
 
 // VaccineData represents a structure for storing vaccine information
 type VaccineData struct {
-	VaccineID string `json:"vaccine_id"`
-	DeviceID  string `json:"device_id"`
-	Value     string `json:"value"`
+	VaccineID   string `json:"vaccine_id"`
+	DeviceID    string `json:"device_id"`
+	Value       string `json:"value"`
+	CreatedDate string `json:"created_date"` // Thêm trường thời gian tạo
 }
 
 var logger = flogging.MustGetLogger("vaccine_cc")
@@ -35,8 +36,8 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	switch function {
 	case "addVaccineData":
 		return s.addVaccineData(APIstub, args)
-	case "queryVaccineDataByID":
-		return s.queryVaccineDataByID(APIstub, args)
+	case "queryVaccineDataByVaccineID":
+		return s.queryVaccineDataByVaccineID(APIstub, args)
 	case "initLedger":
 		return s.initLedger(APIstub)
 	default:
@@ -47,46 +48,59 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 // initLedger initializes the ledger with sample data
 func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Response {
 	vaccines := []VaccineData{
-		{VaccineID: "VAC001", DeviceID: "DEV001", Value: "-3"},
-		{VaccineID: "VAC002", DeviceID: "DEV002", Value: "-4"},
-		{VaccineID: "VAC003", DeviceID: "DEV003", Value: "-10"},
+		{VaccineID: "VAC001", DeviceID: "DEV002", Value: "-4"},
+		{VaccineID: "VAC002", DeviceID: "DEV003", Value: "-10"},
 	}
 
 	for _, vaccine := range vaccines {
-		logger.Infof("Adding vaccine: %+v", vaccine)
+		// Lấy timestamp giả định (hoặc thực tế)
+		txTime, err := APIstub.GetTxTimestamp()
+		if err != nil {
+			return shim.Error("Failed to get transaction timestamp: " + err.Error())
+		}
+		timestamp := fmt.Sprintf("%d", txTime.Seconds)
+
+		// Thêm trường CreatedDate vào dữ liệu mẫu
+		vaccine.CreatedDate = timestamp
+
+		// Tạo khóa bằng VaccineID và timestamp
+		compositeKey := vaccine.VaccineID + "_" + timestamp
+
 		dataAsBytes, err := json.Marshal(vaccine)
 		if err != nil {
-			logger.Errorf("Failed to marshal vaccine: %s", err)
 			return shim.Error("Failed to marshal data: " + err.Error())
 		}
 
-		err = APIstub.PutState(vaccine.VaccineID, dataAsBytes)
+		err = APIstub.PutState(compositeKey, dataAsBytes)
 		if err != nil {
-			logger.Errorf("Failed to add vaccine data: %s", err)
 			return shim.Error("Failed to add vaccine data: " + err.Error())
 		}
 	}
 
-	logger.Infof("Ledger initialized successfully")
 	return shim.Success(nil)
 }
 
 // addVaccineData adds a new vaccine data record
 func (s *SmartContract) addVaccineData(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-	// Ensure client has the correct attribute/role
-	// val, ok, err := cid.GetAttributeValue(APIstub, "role")
-	// if err != nil || !ok || val != "admin" {
-	// 	return shim.Error("Client identity does not possess the required attribute 'role' with value 'admin'")
-	// }
-
 	if len(args) != 3 {
 		return shim.Error("Incorrect number of arguments. Expecting 3")
 	}
 
+	// Lấy timestamp từ giao dịch
+	txTime, err := APIstub.GetTxTimestamp()
+	if err != nil {
+		return shim.Error("Failed to get transaction timestamp: " + err.Error())
+	}
+	timestamp := fmt.Sprintf("%d", txTime.Seconds)
+
+	// Tạo Composite Key chỉ với VaccineID và timestamp
+	compositeKey := args[0] + "_" + timestamp
+
 	var data = VaccineData{
-		VaccineID: args[0],
-		DeviceID:  args[1],
-		Value:     args[2],
+		VaccineID:   args[0],
+		DeviceID:    args[1],
+		Value:       args[2],
+		CreatedDate: timestamp, // Thêm thời gian tạo
 	}
 
 	dataAsBytes, err := json.Marshal(data)
@@ -94,31 +108,55 @@ func (s *SmartContract) addVaccineData(APIstub shim.ChaincodeStubInterface, args
 		return shim.Error("Failed to marshal data: " + err.Error())
 	}
 
-	err = APIstub.PutState(data.VaccineID, dataAsBytes)
+	// Lưu dữ liệu với Composite Key
+	err = APIstub.PutState(compositeKey, dataAsBytes)
 	if err != nil {
 		return shim.Error("Failed to add vaccine data: " + err.Error())
 	}
 
-	return shim.Success(dataAsBytes)
+	return shim.Success([]byte("Data added successfully with Key: " + compositeKey))
 }
 
 // queryVaccineDataByID queries vaccine data by vaccine_id
-func (s *SmartContract) queryVaccineDataByID(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+func (s *SmartContract) queryVaccineDataByVaccineID(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	if len(args) != 1 {
 		return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
 
-	dataAsBytes, err := APIstub.GetState(args[0])
+	// Tạo khóa tìm kiếm với prefix là VaccineID
+	prefix := args[0] + "_"
+
+	// Truy vấn tất cả bản ghi bắt đầu bằng prefix
+	resultsIterator, err := APIstub.GetStateByRange(prefix, prefix+"~")
 	if err != nil {
-		return shim.Error("Failed to get data: " + err.Error())
-	} else if dataAsBytes == nil {
-		return shim.Error("No data found for vaccine_id: " + args[0])
+		return shim.Error("Failed to query data by VaccineID: " + err.Error())
+	}
+	defer resultsIterator.Close()
+
+	var results []VaccineData
+
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error("Failed to iterate results: " + err.Error())
+		}
+
+		var data VaccineData
+		err = json.Unmarshal(queryResponse.Value, &data)
+		if err != nil {
+			return shim.Error("Failed to unmarshal data: " + err.Error())
+		}
+
+		results = append(results, data)
 	}
 
-	return shim.Success(dataAsBytes)
-}
+	resultsAsBytes, err := json.Marshal(results)
+	if err != nil {
+		return shim.Error("Failed to marshal query results: " + err.Error())
+	}
 
-/////////////////////////////// API //////////////////////////////
+	return shim.Success(resultsAsBytes)
+}
 
 func main() {
 	err := shim.Start(new(SmartContract))
