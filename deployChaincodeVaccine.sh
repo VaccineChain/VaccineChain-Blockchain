@@ -219,7 +219,7 @@ chaincodeInvokeInit() {
     #     -c '{"function": "initLedger", "Args":[]}'
 
     # Run lan thu hai:
-    peer chaincode invoke -o localhost:7050 \
+    peer chaincode invoke -o localhost:7050 \x
         --ordererTLSHostnameOverride orderer.example.com \
         --tls $CORE_PEER_TLS_ENABLED \
         --cafile $ORDERER_CA \
