@@ -16,13 +16,14 @@
 'use strict';
 var log4js = require('log4js');
 var logger = log4js.getLogger('SampleWebApp');
+logger.level = "debug";
 var express = require('express');
 var bodyParser = require('body-parser');
 var http = require('http');
 var util = require('util');
 var app = express();
-var expressJWT = require('express-jwt');
-var jwt = require('jsonwebtoken');
+var { expressjwt: jwt } = require('express-jwt');
+var jsonwebtoken = require('jsonwebtoken');
 var bearerToken = require('express-bearer-token');
 var cors = require('cors');
 const prometheus = require('prom-client')
@@ -51,8 +52,9 @@ app.use(bodyParser.urlencoded({
 }));
 // set secret variable
 app.set('secret', 'thisismysecret');
-app.use(expressJWT({
-	secret: 'thisismysecret'
+app.use(jwt({
+	secret: 'thisismysecret',
+	algorithms: ["HS256"],
 }).unless({
 	path: ['/users', '/metrics']
 }));
@@ -64,7 +66,7 @@ app.use(function (req, res, next) {
 	}
 
 	var token = req.token;
-	jwt.verify(token, app.get('secret'), function (err, decoded) {
+	jsonwebtoken.verify(token, app.get('secret'), function (err, decoded) {
 		if (err) {
 			res.send({
 				success: false,
@@ -118,7 +120,7 @@ app.post('/users', async function (req, res) {
 		res.json(getErrorMessage('\'orgName\''));
 		return;
 	}
-	var token = jwt.sign({
+	var token = jsonwebtoken.sign({
 		exp: Math.floor(Date.now() / 1000) + parseInt(hfc.getConfigSetting('jwt_expiretime')),
 		username: username,
 		orgName: orgName
@@ -135,7 +137,6 @@ app.post('/users', async function (req, res) {
 	}
 
 });
-
 // Create Channel
 app.post('/channels', async function (req, res) {
 	logger.info('<<<<<<<<<<<<<<<<< C R E A T E  C H A N N E L >>>>>>>>>>>>>>>>>');
@@ -214,7 +215,6 @@ app.post('/chaincodes', async function (req, res) {
 	let message = await install.installChaincode(peers, chaincodeName, chaincodePath, chaincodeVersion, chaincodeType, req.username, req.orgname)
 	res.send(message);
 });
-
 // Instantiate chaincode on target peers
 app.post('/channels/:channelName/chaincodes', async function (req, res) {
 	logger.debug('==================== INSTANTIATE CHAINCODE ==================');
@@ -256,6 +256,7 @@ app.post('/channels/:channelName/chaincodes', async function (req, res) {
 	let message = await instantiate.instantiateChaincode(peers, channelName, chaincodeName, chaincodeVersion, chaincodeType, fcn, args, req.username, req.orgname);
 	res.send(message);
 });
+
 
 
 // Invoke transaction on chaincode on target peers
@@ -310,7 +311,7 @@ app.post('/channels/:channelName/chaincodes/:chaincodeName', async function (req
 	}
 });
 
-// GET BY ID
+
 // Query on chaincode on target peers
 app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req, res) {
 	logger.debug('==================== QUERY BY CHAINCODE ==================');
