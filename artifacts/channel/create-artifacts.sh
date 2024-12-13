@@ -1,4 +1,3 @@
-
 chmod -R 0755 ./crypto-config
 # Delete existing artifacts
 rm -rf ./crypto-config

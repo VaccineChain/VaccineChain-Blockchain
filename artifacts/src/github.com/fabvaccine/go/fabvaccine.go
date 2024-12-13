@@ -100,7 +100,7 @@ func (s *SmartContract) addVaccineData(APIstub shim.ChaincodeStubInterface, args
 		VaccineID:   args[0],
 		DeviceID:    args[1],
 		Value:       args[2],
-		CreatedDate: timestamp, // Thêm thời gian tạo
+		CreatedDate: timestamp,
 	}
 
 	dataAsBytes, err := json.Marshal(data)
