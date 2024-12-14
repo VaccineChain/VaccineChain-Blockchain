@@ -220,6 +220,18 @@ chaincodeInvokeInit() {
 
     # Run lan thu hai:
     # peer chaincode invoke -o localhost:7050 \x
+    peer chaincode invoke -o localhost:7050 \
+        --ordererTLSHostnameOverride orderer.example.com \
+        --tls $CORE_PEER_TLS_ENABLED \
+        --cafile $ORDERER_CA \
+        -C $CHANNEL_NAME -n ${CC_NAME} \
+        --isInit \
+        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
+        -c '{"function": "initLedger", "Args":[]}'
+
+    # Run lan thu hai:
+    # peer chaincode invoke -o localhost:7050 \x
     #     --ordererTLSHostnameOverride orderer.example.com \
     #     --tls $CORE_PEER_TLS_ENABLED \
     #     --cafile $ORDERER_CA \
@@ -251,7 +263,17 @@ chaincodeInvoke() {
 
 # Run this function if you add any new dependency in chaincode
 presetup
+presetup
 
+packageChaincode
+installChaincode
+queryInstalled
+approveForMyOrg1
+checkCommitReadyness
+approveForMyOrg2
+checkCommitReadyness
+commitChaincodeDefination
+queryCommitted
 packageChaincode
 installChaincode
 queryInstalled
