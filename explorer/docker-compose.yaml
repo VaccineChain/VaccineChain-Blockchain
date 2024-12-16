@@ -7,8 +7,8 @@ volumes:
   walletstore:
 
 networks:
-  mynetwork.com:
-    name: test
+  fabric_test:
+    external: true
 
 services:
 
@@ -28,7 +28,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
-      - mynetwork.com
+      - fabric_test
 
   explorer.mynetwork.com:
     image: ghcr.io/hyperledger-labs/explorer:latest
@@ -47,8 +47,8 @@ services:
       - PORT=${PORT:-8080}
     volumes:
       - ./config.json:/opt/explorer/app/platform/fabric/config.json
-      - ./first-network.json:/opt/explorer/app/platform/fabric/first-network.json
-      - ../artifacts/channel/crypto-config:/tmp/crypto
+      - ./connection-profile:/opt/explorer/app/platform/fabric/connection-profile
+      - ./organizations:/tmp/crypto
       - walletstore:/opt/explorer/wallet
     ports:
       - ${PORT:-8080}:${PORT:-8080}
@@ -56,4 +56,4 @@ services:
       explorerdb.mynetwork.com:
         condition: service_healthy
     networks:
-      - mynetwork.com
+      - fabric_test
